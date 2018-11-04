@@ -25,7 +25,7 @@ class GitHubSearchViewReactor: Reactor {
     }
     
     struct State {
-        var repos : [String]?
+        var repos : [String] = []
         var nextPage = 1
     }
     
