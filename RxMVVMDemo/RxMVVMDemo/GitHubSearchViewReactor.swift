@@ -97,7 +97,7 @@ class GitHubSearchViewReactor: Reactor {
             let repos =  items.compactMap { $0["full_name"] as? String}
             let nextPage = repos.isEmpty ? 0 : page + 1
             return (repos, nextPage)
-        }
+        }.catchErrorJustReturn(([], page))
     }
     
 }
