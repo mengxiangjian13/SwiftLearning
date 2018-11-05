@@ -42,7 +42,7 @@ class GitHubSearchViewReactor: Reactor {
             guard query?.lengthOfBytes(using: .utf8) ?? 0 > 0 else {return Observable.empty()}
             return Observable.concat([
                 Observable.just(Mutation.setQuery(query)),
-                self.search(query: query, page: 1).takeUntil(self.action.filter{_ in true}).map {
+                self.search(query: query, page: 1).map {
                     return Mutation.setRepos($0, $1)
                 }])
         case .loadMore :
@@ -51,7 +51,7 @@ class GitHubSearchViewReactor: Reactor {
             guard self.currentState.nextPage > 0 else {return Observable.empty()}
             return Observable.concat([
                 Observable.just(Mutation.setIsLoading(true)),
-                self.search(query: query, page: self.currentState.nextPage).takeUntil(self.action.filter{_ in false}).map {
+                self.search(query: query, page: self.currentState.nextPage).map {
                     return Mutation.setMoreRepos($0, $1)
                 },
                 Observable.just(Mutation.setIsLoading(false))
@@ -69,6 +69,7 @@ class GitHubSearchViewReactor: Reactor {
             var newState = state
             newState.repos.append(contentsOf: repos)
             newState.nextPage = nextPage
+            newState.isLoading = false
             return newState
         case let .setIsLoading(isLoading):
             var newState = state
