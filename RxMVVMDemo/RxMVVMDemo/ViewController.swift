@@ -71,6 +71,13 @@ extension ViewController : View {
             let viewController = SFSafariViewController(url: url)
             self.searchController.present(viewController, animated: true, completion: nil)
         }).disposed(by: disposeBag)
+        
+        tableView.rx.contentOffset.filter { [weak self]
+            contentOffset in
+            guard let `self` = self else { return false}
+            return contentOffset.y + self.tableView.bounds.height > self.tableView.contentSize.height - 100
+            }.map{ _ in GitHubSearchViewReactor.Action.loadMore }
+            .bind(to: reactor.action).disposed(by: disposeBag)
     }
 }
 
