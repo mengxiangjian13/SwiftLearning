@@ -53,17 +53,10 @@ class ViewController: UIViewController {
         provider.request(.repo("mengxiangjian13")) { result in
             do {
                 let response = try result.dematerialize()
-                let array = try response.mapJSON()
-                if array is Array<[String:Any]> {
-                    let repoArray = array as! Array<[String:Any]>
-                    self.repos = try repoArray.map {
-                        return try JSONDecoder().decode(Repo.self, from: JSONSerialization.data(withJSONObject: $0, options: JSONSerialization.WritingOptions(rawValue: 0)))
-                    }
-                    DispatchQueue.main.async {
-                        self.tableView.reloadData()
-                    }
+                self.repos = try JSONDecoder().decode([Repo].self, from:response.data)
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
                 }
-                
             } catch {
                 print("request user repos failed!")
             }
